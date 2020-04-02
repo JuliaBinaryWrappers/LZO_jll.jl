@@ -2,8 +2,6 @@
 export liblzo2
 
 ## Global variables
-const PATH_list = String[]
-const LIBPATH_list = String[]
 PATH = ""
 LIBPATH = ""
 LIBPATH_env = "PATH"
@@ -26,12 +24,13 @@ const liblzo2 = "liblzo2-2.dll"
 Open all libraries
 """
 function __init__()
-    global prefix = abspath(joinpath(@__DIR__, ".."))
+    global artifact_dir = abspath(artifact"LZO")
 
     # Initialize PATH and LIBPATH environment variable listings
     global PATH_list, LIBPATH_list
-
-    global liblzo2_path = abspath(joinpath(artifact"LZO", liblzo2_splitpath...))
+    # We first need to add to LIBPATH_list the libraries provided by Julia
+    append!(LIBPATH_list, [Sys.BINDIR, joinpath(Sys.BINDIR, Base.LIBDIR, "julia"), joinpath(Sys.BINDIR, Base.LIBDIR)])
+    global liblzo2_path = normpath(joinpath(artifact_dir, liblzo2_splitpath...))
 
     # Manually `dlopen()` this right now so that future invocations
     # of `ccall` with its `SONAME` will find this path immediately.
